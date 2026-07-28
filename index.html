@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Work Clock</title>
+    <script>
+      (function() {
+        try {
+          var currentFetch = window.fetch;
+          if (typeof currentFetch === 'function') {
+            Object.defineProperty(window, 'fetch', {
+              configurable: true,
+              enumerable: true,
+              get: function() {
+                return currentFetch;
+              },
+              set: function(value) {
+                console.log('window.fetch was overwritten');
+                currentFetch = value;
+              }
+            });
+          }
+        } catch (e) {
+          // If we can't redefine it, the error might still occur if a lib tries to assign.
+          // In some restricted environments, window.fetch is not configurable.
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

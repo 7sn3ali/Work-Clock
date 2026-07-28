@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Thmanyah';
+  src: url('./fonts/thmanyahseriftext-Regular.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@utility font-thmanyah {
+  font-family: 'Thmanyah', serif !important;
+  font-feature-settings: "liga" 1, "dlig" 1, "clig" 1, "calt" 1 !important;
+  text-rendering: optimizeLegibility !important;
+  font-variant-ligatures: normal !important;
+  font-weight: 400 !important;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-morning-paper: #F9FAF9;
+  --color-midnight-canvas: #121318;
+  --color-cloud-surface: #FFFFFF;
+  --color-obsidian-surface: #1E1F26;
+  
+  --color-action-indigo: #4F46E5;
+  --color-ink-primary-light: #1A1A1A;
+  --color-ink-primary-dark: #F3F4F6;
+  --color-ink-muted-light: #6B7280;
+  --color-ink-muted-dark: #9CA3AF;
+  
+  --color-success-spring: #34D399;
+  
+  --color-soft-divider-light: #E5E7EB;
+  --color-soft-divider-dark: #374151;
+ 
+  --color-focus-mint: #D1F4E0;
+  --color-focus-mint-text: #14532D;
+  --color-gentle-lilac: #EAE4FD;
+  --color-gentle-lilac-text: #3B2786;
+  --color-energy-peach: #FFE2D1;
+  --color-energy-peach-text: #7A2E0D;
+  --color-calm-sky: #D1EBF4;
+  --color-calm-sky-text: #154B5E;
+  --color-buttercup: #FEF0C7;
+  --color-buttercup-text: #7A5B0F;
+
+  --font-sans: 'Thmanyah', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Inter', arial, sans-serif;
+  --font-rounded: 'Thmanyah', 'SF Pro Rounded', ui-rounded, 'Inter', sans-serif;
+  --font-mono: 'SF Pro Text', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-morning-paper dark:bg-midnight-canvas text-ink-primary-light dark:text-ink-primary-dark font-sans antialiased;
+  }
+}
+

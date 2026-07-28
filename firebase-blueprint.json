@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User specific settings such as default hourly rate.",
+      "type": "object",
+      "properties": {
+        "hourlyRate": { "type": "number", "description": "Hourly rate in SAR" }
+      },
+      "required": ["hourlyRate"]
+    },
+    "WorkSession": {
+      "title": "Work Session",
+      "description": "A single session of tracked work time.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "startTime": { "type": "number" },
+        "currentSegmentStart": { "type": "number" },
+        "endTime": { "type": ["number", "null"] },
+        "status": { "type": "string", "enum": ["active", "paused", "completed"] },
+        "durationMs": { "type": "number" },
+        "pauses": { "type": "number" },
+        "hourlyRate": { "type": "number" },
+        "totalEarned": { "type": "number" },
+        "countedHours": { "type": "number" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": [
+        "userId",
+        "startTime",
+        "currentSegmentStart",
+        "status",
+        "durationMs",
+        "pauses",
+        "hourlyRate",
+        "totalEarned",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "An invoice generated for a client.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "reference": { "type": "string" },
+        "date": { "type": "number" },
+        "dueDate": { "type": ["number", "null"] },
+        "clientName": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "totalHours": { "type": "number" },
+        "status": { "type": "string", "enum": ["draft", "sent", "partial", "paid"] },
+        "paidAmount": { "type": "number" },
+        "sessionIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": [
+        "userId",
+        "reference",
+        "date",
+        "clientName",
+        "totalAmount",
+        "totalHours",
+        "status",
+        "paidAmount",
+        "sessionIds",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user settings like hourly rate."
+    },
+    "users/{userId}/sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/WorkSession" },
+      "description": "Stores working sessions for the user."
+    },
+    "users/{userId}/invoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/Invoice" },
+      "description": "Stores invoices for the user."
+    }
+  }
+}

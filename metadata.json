@@ -1,0 +1,6 @@
+{
+  "name": "Work Clock",
+  "description": "Track your working hours, manage your hourly rate, and export monthly reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

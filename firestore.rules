@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    
+    // Auth without token.email_verified requirement for broader preview app usage. Usually good practice to enforce.
+    function isSignedIn() { return request.auth != null; }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['hourlyRate']) &&
+             data.keys().size() == 1 &&
+             data.hourlyRate is number &&
+             data.hourlyRate >= 0;
+    }
+
+    function isValidWorkSessionCreate(data) {
+      return data.userId == request.auth.uid;
+    }
+
+    function isValidWorkSessionUpdate(data) {
+      return data.userId == request.auth.uid;
+    }
+
+    function isValidInvoiceCreate(data) {
+      return data.userId == request.auth.uid;
+    }
+
+    function isValidInvoiceUpdate(data) {
+      return data.userId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidId(userId) &&
+                       isValidUser(incoming());
+      allow update: if isSignedIn() && request.auth.uid == userId && isValidId(userId) &&
+                       isValidUser(incoming()) &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['hourlyRate']);
+      
+      match /sessions/{sessionId} {
+        allow get: if isSignedIn() && request.auth.uid == userId && isValidId(userId) && isValidId(sessionId);
+        // Correct query enforcer
+        allow list: if isSignedIn() && request.auth.uid == userId && isValidId(userId);
+
+        // NOTE: we use timestamp objects for createdAt/updatedAt
+        allow create: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         isValidId(userId) &&
+                         isValidId(sessionId) &&
+                         isValidWorkSessionCreate(incoming()) &&
+                         incoming().createdAt == request.time &&
+                         incoming().updatedAt == request.time;
+
+        allow update: if (
+          isSignedIn() &&
+          request.auth.uid == userId &&
+          isValidId(userId) &&
+          isValidId(sessionId) &&
+          isValidWorkSessionUpdate(incoming()) &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().userId == existing().userId
+        );
+
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(userId) && isValidId(sessionId);
+      }
+      match /invoices/{invoiceId} {
+        allow get: if isSignedIn() && request.auth.uid == userId && isValidId(userId) && isValidId(invoiceId);
+        allow list: if isSignedIn() && request.auth.uid == userId && isValidId(userId);
+
+        allow create: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         isValidId(userId) &&
+                         isValidId(invoiceId) &&
+                         isValidInvoiceCreate(incoming()) &&
+                         incoming().createdAt == request.time &&
+                         incoming().updatedAt == request.time;
+
+        allow update: if (
+          isSignedIn() &&
+          request.auth.uid == userId &&
+          isValidId(userId) &&
+          isValidId(invoiceId) &&
+          isValidInvoiceUpdate(incoming()) &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().userId == existing().userId
+        );
+
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(userId) && isValidId(invoiceId);
+      }
+    }
+  }
+}
